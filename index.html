@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Little Lens — Documentary Filmmaking for Kids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --charcoal: #1a1a18;
+    --amber: #d4820a;
+    --amber-light: #f0a82a;
+    --warm-mid: #8c7b62;
+    --film-dark: #0e0d0b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2.5rem;
+    background: rgba(245, 240, 232, 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(26,26,24,0.08);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1.25rem;
+    color: var(--charcoal);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-logo span { color: var(--amber); }
+
+  .nav-cta {
+    background: var(--charcoal);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.6rem 1.4rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .nav-cta:hover { background: var(--amber); color: var(--charcoal); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5rem 3rem 5rem 5rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background: var(--amber);
+  }
+
+  .hero-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--charcoal);
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-headline em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #5a5448;
+    max-width: 440px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--charcoal);
+    color: var(--charcoal);
+  }
+
+  .cta-block { display: flex; flex-direction: column; gap: 0.75rem; max-width: 360px; }
+
+  .input-row { display: flex; gap: 0; }
+
+  .input-row input {
+    flex: 1;
+    padding: 0.9rem 1rem;
+    border: 1.5px solid var(--charcoal);
+    border-right: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--charcoal);
+    outline: none;
+  }
+
+  .input-row input::placeholder { color: #a09880; }
+  .input-row input:focus { border-color: var(--amber); }
+
+  .btn-primary {
+    background: var(--amber);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.9rem 1.4rem;
+    border: 1.5px solid var(--amber);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+  }
+  .btn-primary:hover { background: var(--charcoal); color: var(--cream); border-color: var(--charcoal); }
+
+  .cta-note {
+    font-size: 0.75rem;
+    color: var(--warm-mid);
+  }
+
+  .hero-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .film-strip {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .film-row {
+    display: flex;
+    gap: 6px;
+    padding: 6px 0;
+    animation: scrollFilm 20s linear infinite;
+  }
+
+  .film-row:nth-child(even) { animation-direction: reverse; animation-duration: 25s; }
+
+  @keyframes scrollFilm {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .film-frame {
+    width: 120px;
+    height: 80px;
+    background: var(--charcoal);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    opacity: 0.85;
+  }
+
+  .film-frame::before, .film-frame::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 12px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--film-dark) 0, var(--film-dark) 8px,
+      transparent 8px, transparent 14px
+    );
+  }
+  .film-frame::before { left: 0; }
+  .film-frame::after { right: 0; }
+
+  .film-frame-inner {
+    margin: 0 14px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #2a2520 0%, #1a1710 100%);
+  }
+
+  .hero-overlay-text {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(5rem, 12vw, 10rem);
+    font-weight: 900;
+    font-style: italic;
+    color: rgba(245,240,232,0.06);
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    letter-spacing: -0.04em;
+  }
+
+  /* SOCIAL PROOF STRIP */
+  .strip {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 1rem 2.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .strip-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.7);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .strip-item::before { content: '◆'; color: var(--amber); font-size: 0.5rem; }
+
+  /* SECTION BASE */
+  section { padding: 6rem 5rem; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::before { content: ''; display: block; width: 1.5rem; height: 1px; background: var(--amber); }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  /* WHAT THEY LEARN */
+  .learn-section { background: var(--charcoal); color: var(--cream); }
+
+  .learn-section .section-title { color: var(--cream); }
+
+  .learn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem 5rem;
+    margin-top: 3.5rem;
+  }
+
+  .learn-col-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .learn-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .learn-icon {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    background: rgba(212,130,10,0.15);
+    border: 1px solid rgba(212,130,10,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
+  }
+
+  .learn-item-text strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.25rem;
+  }
+
+  .learn-item-text p {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: rgba(245,240,232,0.6);
+  }
+
+  /* JOURNEY / SESSIONS */
+  .journey-section { background: var(--cream); }
+
+  .sessions {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5px;
+    margin-top: 3rem;
+    background: var(--charcoal);
+  }
+
+  .session-card {
+    background: var(--cream);
+    padding: 2rem 1.5rem;
+    position: relative;
+    transition: background 0.25s;
+    cursor: default;
+  }
+
+  .session-card:hover { background: #ede8de; }
+
+  .session-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: rgba(26,26,24,0.07);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .session-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+  }
+
+  .session-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+
+  .session-desc {
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: #6a6050;
+    margin-bottom: 1rem;
+  }
+
+  .session-output {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--charcoal);
+    background: rgba(212,130,10,0.12);
+    border-left: 2px solid var(--amber);
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* AI SECTION */
+  .ai-section {
+    background: #f0ebe0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .ai-visual {
+    position: relative;
+    height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-circle {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 1.5px solid var(--amber);
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rotateSlow 18s linear infinite;
+  }
+
+  .ai-circle-inner {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px dashed rgba(26,26,24,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.25rem;
+    animation: rotateSlow 18s linear infinite reverse;
+  }
+
+  @keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+  .ai-center-icon { font-size: 2.5rem; }
+
+  .ai-center-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-align: center;
+  }
+
+  .ai-orbit-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--amber);
+    border-radius: 50%;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .ai-tags {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .ai-tag {
+    position: absolute;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--charcoal);
+    background: var(--cream);
+    padding: 0.3rem 0.6rem;
+    border: 1px solid rgba(26,26,24,0.12);
+    white-space: nowrap;
+  }
+
+  .ai-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    display: inline-block;
+  }
+  .ai-pill--can {
+    background: rgba(212,130,10,0.15);
+    border: 1px solid rgba(212,130,10,0.4);
+    color: var(--amber-light);
+  }
+  .ai-pill--cant {
+    background: rgba(245,240,232,0.05);
+    border: 1px solid rgba(245,240,232,0.12);
+    color: rgba(245,240,232,0.4);
+  }
+
+  .ai-list { list-style: none; }
+
+  .ai-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(26,26,24,0.08);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: #5a5448;
+    align-items: flex-start;
+  }
+
+  .ai-list li::before {
+    content: '→';
+    color: var(--amber);
+    flex-shrink: 0;
+    font-weight: 500;
+    margin-top: 0.1rem;
+  }
+
+  /* TAKE HOME */
+  .takehome {
+    background: var(--amber);
+    color: var(--charcoal);
+    text-align: center;
+    padding: 5rem;
+  }
+
+  .takehome .section-title {
+    font-size: clamp(1.8rem, 3vw, 2.75rem);
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .takehome p {
+    font-size: 1rem;
+    max-width: 520px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .takehome .section-label { justify-content: center; }
+  .takehome .section-label::before { background: var(--charcoal); }
+
+  .quote-block {
+    max-width: 560px;
+    margin: 0 auto;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    border-left: 3px solid var(--charcoal);
+    padding-left: 1.5rem;
+    text-align: left;
+  }
+
+  /* AGE GROUPS */
+  .ages-section { background: var(--cream); }
+
+  .ages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 3rem;
+    background: var(--charcoal);
+  }
+
+  .age-card {
+    background: var(--cream);
+    padding: 2.5rem 2rem;
+  }
+
+  .age-range {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+  }
+
+  .age-title {
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(26,26,24,0.1);
+  }
+
+  .age-desc {
+    font-size: 0.83rem;
+    line-height: 1.7;
+    color: #6a6050;
+  }
+
+  .age-film-len {
+    margin-top: 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  /* WAITLIST SECTION */
+  .waitlist-section {
+    background: var(--film-dark);
+    color: var(--cream);
+    text-align: center;
+    padding: 7rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .waitlist-section::before {
+    content: 'LITTLE LENS';
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 18vw;
+    font-weight: 900;
+    font-style: italic;
+    color: rgba(255,255,255,0.03);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    letter-spacing: -0.04em;
+  }
+
+  .waitlist-section .section-title { color: var(--cream); max-width: 600px; margin: 0 auto 1rem; }
+
+  .waitlist-section p {
+    font-size: 0.95rem;
+    color: rgba(245,240,232,0.6);
+    max-width: 440px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .waitlist-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .waitlist-form input {
+    padding: 1rem 1.25rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .waitlist-form input:focus { border-color: var(--amber); }
+  .waitlist-form input::placeholder { color: rgba(245,240,232,0.35); }
+
+  .waitlist-form select {
+    padding: 1rem 1.25rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(245,240,232,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .waitlist-form select option { background: #1a1a18; color: var(--cream); }
+
+  .btn-waitlist {
+    background: var(--amber);
+    color: var(--charcoal);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-waitlist:hover { background: var(--amber-light); }
+
+  .success-msg {
+    display: none;
+    background: rgba(212,130,10,0.15);
+    border: 1px solid var(--amber);
+    color: var(--cream);
+    padding: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--film-dark);
+    color: rgba(245,240,232,0.4);
+    padding: 2rem 5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 1rem;
+    color: var(--cream);
+  }
+  .footer-logo span { color: var(--amber); }
+
+  footer p { font-size: 0.75rem; }
+
+  /* animations removed */
+
+  /* RESPONSIVE */
+  /* ── TABLET (≤1024px) ── */
+  @media (max-width: 1024px) {
+    section { padding: 5rem 3rem; }
+    .hero-left { padding: 6rem 2.5rem 3rem 3rem; }
+    .sessions { grid-template-columns: repeat(3, 1fr); }
+    .ai-section { padding: 5rem 3rem; gap: 3rem; }
+  }
+
+  /* ── SMALL TABLET / LARGE MOBILE (≤900px) ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    section { padding: 4rem 1.5rem; }
+
+    /* Hero */
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 6rem 1.5rem 2rem; }
+    .hero-right { height: 220px; }
+
+    /* Learn */
+    .learn-grid { grid-template-columns: 1fr; gap: 2rem; }
+
+    /* Sessions */
+    .sessions { grid-template-columns: 1fr 1fr; }
+
+    /* AI */
+    .ai-section { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 2rem; }
+    .ai-visual { height: 260px; }
+
+    /* Take home */
+    .takehome { padding: 4rem 1.5rem; }
+
+    /* Ages */
+    .ages-grid { grid-template-columns: 1fr 1fr; }
+
+    /* About — stack to single column */
+    .about-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
+
+    /* Waitlist */
+    .waitlist-section { padding: 5rem 1.5rem; }
+
+    /* Footer */
+    footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; gap: 0.5rem; }
+  }
+
+  /* ── MOBILE (≤600px) ── */
+  @media (max-width: 600px) {
+    nav { padding: 0.9rem 1.25rem; }
+    .nav-logo { font-size: 1.05rem; }
+    .nav-cta { font-size: 0.72rem; padding: 0.5rem 1rem; }
+
+    section { padding: 3rem 1.25rem; }
+
+    /* Hero */
+    .hero-headline { font-size: 2.2rem; }
+    .hero-sub { font-size: 0.95rem; }
+    .hero-badges { gap: 0.4rem; }
+    .hero-right { height: 180px; }
+    .badge { font-size: 0.65rem; padding: 0.3rem 0.7rem; }
+
+    /* Strip */
+    .strip { gap: 0.75rem; flex-direction: column; align-items: center; padding: 1.25rem; }
+
+    /* Sessions */
+    .sessions { grid-template-columns: 1fr; }
+    .session-num { font-size: 2.5rem; }
+
+    /* AI tags — hide on mobile, too cluttered */
+    .ai-tags { display: none; }
+    .ai-visual { height: 200px; }
+
+    /* Take home */
+    .takehome { padding: 3rem 1.25rem; }
+    .quote-block { font-size: 1.1rem; }
+
+    /* Ages */
+    .ages-grid { grid-template-columns: 1fr; }
+
+    /* About filmmaker styles — stack label above text */
+    .style-row { flex-direction: column !important; gap: 0.4rem !important; }
+    .style-label { min-width: unset !important; }
+
+    /* Waitlist */
+    .waitlist-section { padding: 4rem 1.25rem; }
+    .waitlist-section::before { font-size: 28vw; }
+
+    /* Input row */
+    .input-row { flex-direction: column; }
+    .input-row input { border-right: 1.5px solid var(--charcoal); border-bottom: none; }
+    .input-row input:focus { border-color: var(--amber); }
+
+    /* Footer */
+    footer { padding: 1.5rem 1.25rem; }
+    footer p { font-size: 0.72rem; }
+  }
+
+  /* ── VERY SMALL MOBILE (≤380px) ── */
+  @media (max-width: 380px) {
+    .hero-headline { font-size: 1.9rem; }
+    .hero-eyebrow { font-size: 0.65rem; }
+    .section-title { font-size: 1.6rem; }
+    .nav-cta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Little<span>Lens</span></a>
+  <a href="#waitlist" class="nav-cta">Join the Waitlist</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left visible">
+    <div class="hero-eyebrow">Documentary workshops for kids · Singapore</div>
+    <h1 class="hero-headline">
+      Your child's<br/>story,<br/><em>on film.</em>
+    </h1>
+    <p class="hero-sub">
+      A hands-on workshop where kids ages 7–13 research, film, and edit their own short documentary — using real cameras, real interviews, and real AI tools.
+    </p>
+    <div class="hero-badges">
+      <span class="badge">Ages 7–13</span>
+      <span class="badge">5 Sessions</span>
+      <span class="badge">Max 8 kids</span>
+      <span class="badge">DSA Media & Arts</span>
+    </div>
+    <div class="cta-block">
+      <div class="input-row">
+        <input type="email" id="hero-email" placeholder="your@email.com" />
+        <button class="btn-primary" onclick="scrollToWaitlist()">Join Waitlist</button>
+      </div>
+      <p class="cta-note">Be first to know when dates are announced. No spam, ever.</p>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="film-strip">
+      <div class="film-row">
+        <div class="film-frame"><div class="film-frame-inner">🎬</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🎙️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">📷</div></div>
+        <div class="film-frame"><div class="film-frame-inner">✂️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🔍</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🎬</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🎙️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">📷</div></div>
+      </div>
+      <div class="film-row">
+        <div class="film-frame"><div class="film-frame-inner">🌟</div></div>
+        <div class="film-frame"><div class="film-frame-inner">💡</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🤖</div></div>
+        <div class="film-frame"><div class="film-frame-inner">📝</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🎞️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🌟</div></div>
+        <div class="film-frame"><div class="film-frame-inner">💡</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🤖</div></div>
+      </div>
+      <div class="film-row">
+        <div class="film-frame"><div class="film-frame-inner">🏆</div></div>
+        <div class="film-frame"><div class="film-frame-inner">👁️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🗣️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🌍</div></div>
+        <div class="film-frame"><div class="film-frame-inner">💫</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🏆</div></div>
+        <div class="film-frame"><div class="film-frame-inner">👁️</div></div>
+        <div class="film-frame"><div class="film-frame-inner">🗣️</div></div>
+      </div>
+    </div>
+    <div class="hero-overlay-text">Story</div>
+  </div>
+</section>
+
+<!-- STRIP -->
+<div class="strip">
+  <div class="strip-item">Kids leave with a finished film</div>
+  <div class="strip-item">Real AI literacy, not avoidance</div>
+  <div class="strip-item">Max 8 kids per cohort</div>
+  <div class="strip-item">Strong DSA portfolio piece for media & arts tracks</div>
+  <div class="strip-item">Facilitated by industry professionals</div>
+</div>
+
+<!-- WHAT THEY LEARN -->
+<section class="learn-section">
+  <div class="section-label">What kids actually learn</div>
+  <h2 class="section-title" style="color: var(--cream);">Skills that stick<br/><em style="color:var(--amber)">beyond Monday.</em></h2>
+  <div class="learn-grid">
+    <div>
+      <div class="learn-col-title">Hard Skills — things they can show</div>
+      <div class="learn-item">
+        <div class="learn-icon">📷</div>
+        <div class="learn-item-text">
+          <strong>Intentional filming</strong>
+          <p>How to use a camera or phone deliberately — framing, light, and movement with purpose.</p>
+        </div>
+      </div>
+      <div class="learn-item">
+        <div class="learn-icon">✂️</div>
+        <div class="learn-item-text">
+          <strong>Video editing</strong>
+          <p>Basic editing on free apps like CapCut or iMovie — cutting, sequencing, audio.</p>
+        </div>
+      </div>
+      <div class="learn-item">
+        <div class="learn-icon">📝</div>
+        <div class="learn-item-text">
+          <strong>Scriptwriting & structure</strong>
+          <p>How to write a script and build a story with a clear beginning, middle, and end.</p>
+        </div>
+      </div>
+      <div class="learn-item">
+        <div class="learn-icon">🎙️</div>
+        <div class="learn-item-text">
+          <strong>Real interviewing</strong>
+          <p>How to conduct an interview — and actually listen to what someone is saying.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="learn-col-title">Soft Skills — things parents notice</div>
+      <div class="learn-item">
+        <div class="learn-icon">🧠</div>
+        <div class="learn-item-text">
+          <strong>Critical thinking</strong>
+          <p>Documentary projects push kids to seek truth, analyse perspectives, and synthesise information from real sources — not just accept what they're told.</p>
+        </div>
+      </div>
+      <div class="learn-item">
+        <div class="learn-icon">🗣️</div>
+        <div class="learn-item-text">
+          <strong>Communication & confidence</strong>
+          <p>Presenting a film they made themselves does wonders for a shy child's confidence — they have to convey a message clearly, visually and verbally.</p>
+        </div>
+      </div>
+      <div class="learn-item">
+        <div class="learn-icon">❤️</div>
+        <div class="learn-item-text">
+          <strong>Empathy</strong>
+          <p>Documentary is fundamentally about understanding someone else's story deeply enough to tell it honestly.</p>
+        </div>
+      </div>
+      <div class="learn-item">
+        <div class="learn-icon">⏱️</div>
+        <div class="learn-item-text">
+          <strong>Ownership & follow-through</strong>
+          <p>Research, decision-making, iteration, time management — kids drive the whole project themselves.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section class="journey-section">
+  <div class="section-label">The workshop journey</div>
+  <h2 class="section-title">Five sessions.<br/>One finished film.</h2>
+  <div class="sessions">
+    <div class="session-card">
+      <div class="session-num">01</div>
+      <div class="session-label">Session 1</div>
+      <div class="session-title">Find Your Story</div>
+      <p class="session-desc">Kids observe their world and discover what they genuinely want to explore. No assigned topics — they choose.</p>
+      <div class="session-output">📄 A one-paragraph story idea</div>
+    </div>
+    <div class="session-card">
+      <div class="session-num">02</div>
+      <div class="session-label">Session 2</div>
+      <div class="session-title">Research & Verify</div>
+      <p class="session-desc">Using AI tools alongside real sources. Learning the difference between a prompt and the truth.</p>
+      <div class="session-output">✅ A verified fact sheet</div>
+    </div>
+    <div class="session-card">
+      <div class="session-num">03</div>
+      <div class="session-label">Session 3</div>
+      <div class="session-title">Write & Plan</div>
+      <p class="session-desc">Script structure, interview questions, shot lists. AI suggests — they rewrite every line in their own voice.</p>
+      <div class="session-output">📋 A 1-page script</div>
+    </div>
+    <div class="session-card">
+      <div class="session-num">04</div>
+      <div class="session-label">Session 4</div>
+      <div class="session-title">Film & Interview</div>
+      <p class="session-desc">Cameras out. Real conversations with real people. Unscripted moments that no AI can capture.</p>
+      <div class="session-output">🎥 Raw footage</div>
+    </div>
+    <div class="session-card">
+      <div class="session-num">05</div>
+      <div class="session-label">Session 5</div>
+      <div class="session-title">Edit & Screen</div>
+      <p class="session-desc">Final cut. Then a screening for parents — kids present their finished documentary themselves.</p>
+      <div class="session-output">🏆 A finished 2–3 min documentary</div>
+    </div>
+  </div>
+</section>
+
+<!-- AI SECTION -->
+<section class="ai-section">
+  <div class="ai-visual">
+    <div class="ai-circle">
+      <div class="ai-orbit-dot"></div>
+      <div class="ai-circle-inner">
+        <div class="ai-center-icon">🤖</div>
+        <div class="ai-center-label">AI as tool,<br/>not crutch</div>
+      </div>
+    </div>
+    <div class="ai-tags">
+      <div class="ai-tag" style="top:8%;left:58%;">Research faster</div>
+      <div class="ai-tag" style="top:28%;left:66%;">Transcribe interviews</div>
+      <div class="ai-tag" style="bottom:30%;left:62%;">Structure ideas</div>
+      <div class="ai-tag" style="bottom:12%;left:42%;">Check your sources</div>
+      <div class="ai-tag" style="top:50%;left:0%;">Never observe</div>
+      <div class="ai-tag" style="top:18%;left:2%;">Never feel</div>
+      <div class="ai-tag" style="bottom:35%;left:1%;">Never replace you</div>
+    </div>
+  </div>
+  <div>
+    <div class="section-label">The AI component</div>
+    <h2 class="section-title">We don't teach kids<br/>to avoid AI.<br/><em style="font-style:italic">We teach them to lead it.</em></h2>
+    <ul class="ai-list">
+      <li>Use AI to generate research questions — then go find the real answers yourself</li>
+      <li>Use AI to summarise a long article — but trace every fact to the original source</li>
+      <li>Use AI to suggest a script structure — then rewrite every line in your own voice</li>
+      <li>Use AI to transcribe interviews — saving hours, not replacing thinking</li>
+      <li>Understand what AI genuinely cannot do: observe, feel, go outside, and talk to a real person</li>
+    </ul>
+  </div>
+</section>
+
+<!-- TAKE HOME -->
+<section class="takehome">
+  <div class="section-label" style="color:var(--charcoal)">What they take home</div>
+  <h2 class="section-title">Your child will leave with a finished documentary film they made themselves.</h2>
+  <p>A finished documentary film your child can include in DSA applications — particularly for media arts, film, and visual arts talent tracks. Especially relevant for schools like SOTA which explicitly lists film and photography as DSA talent areas. Something to keep forever. Something to be genuinely proud of.</p>
+  <div class="quote-block">
+    "In Singapore's competitive academic environment, having an original documentary film in your portfolio is genuinely rare and impressive."
+  </div>
+</section>
+
+<!-- AGE GROUPS -->
+<section class="ages-section">
+  <div class="section-label">Age groups</div>
+  <h2 class="section-title">Right-sized for<br/>every learner.</h2>
+  <div class="ages-grid">
+    <div class="age-card">
+      <div class="age-range">7–9</div>
+      <div class="age-title">Young Storytellers</div>
+      <p class="age-desc">Simplified curriculum focused on observation and simple storytelling. Phone filming only. Every session is activity-led with lots of guided discovery.</p>
+      <div class="age-film-len">🎞 1-minute finished film</div>
+    </div>
+    <div class="age-card">
+      <div class="age-range">10–13</div>
+      <div class="age-title">Documentary Makers ⭐ Core Programme</div>
+      <p class="age-desc">Full curriculum. Handles the AI research component, camera work, and proper editing. The complete Little Lens experience.</p>
+      <div class="age-film-len">🎞 2–3 minute finished documentary</div>
+    </div>
+    <div class="age-card">
+      <div class="age-range">14–17</div>
+      <div class="age-title">Advanced Documentarians</div>
+      <p class="age-desc">Deeper subject matter, stronger AI literacy focus, more complex editing. Closer to what you'd encounter in a real production environment.</p>
+      <div class="age-film-len">🎞 3–5 minute finished documentary</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section style="background:var(--cream);padding:6rem 5rem;">
+  <div class="about-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;max-width:1100px;margin:0 auto;">
+    
+    <!-- Left: Bio -->
+    <div>
+      <div class="section-label">Who's behind Little Lens</div>
+      <h2 class="section-title" style="margin-bottom:1.5rem;">Hi, I'm Joy.<br/><em style="font-style:italic;color:var(--amber)">I make documentaries.</em></h2>
+      <p style="font-size:0.95rem;line-height:1.8;color:#5a5448;margin-bottom:1.25rem;">I've spent over a decade telling real stories on film. My thesis documentary <em>That's Wicked!</em> won Best Documentary at the Singapore International Film Festival and screened at the International Documentary Film Festival Amsterdam. Since then I've directed and produced documentaries for Discovery Channel, government agencies, and DesignSingapore — including 24 documentaries on the Asian Insights programme.</p>
+      <p style="font-size:0.95rem;line-height:1.8;color:#5a5448;margin-bottom:1.25rem;">I'm particularly proud of two 5-part series: <em>We Are All Escapists</em> (2019), which follows female ex-offenders in Singapore, and <em>Fade to Black</em> (2020), an exploration of mortality and the people it touches.</p>
+      <p style="font-size:0.95rem;line-height:1.8;color:#5a5448;margin-bottom:2rem;">Little Lens was born from a simple belief — that every child has a story worth telling, and that learning to tell it honestly is one of the most powerful things we can teach them.</p>
+      <a href="https://shootingsolo.myportfolio.com" target="_blank" style="display:inline-flex;align-items:center;gap:0.5rem;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--charcoal);border-bottom:1.5px solid var(--amber);padding-bottom:0.2rem;text-decoration:none;">View my portfolio →</a>
+    </div>
+
+    <!-- Right: Documentary Styles -->
+    <div>
+      <div class="section-label">No two documentaries are the same</div>
+      <p style="font-size:0.95rem;line-height:1.8;color:#5a5448;margin-bottom:2rem;">Documentary filmmaking isn't a formula. It's a form — and within that form, every filmmaker finds their own voice, their own obsessions, their own way of seeing the world. That's what we teach kids to discover.</p>
+
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <div class="style-row" style="padding:1.1rem 0;border-bottom:1px solid rgba(26,26,24,0.08);display:flex;gap:1.25rem;align-items:flex-start;">
+          <div class="style-label" style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);text-transform:uppercase;white-space:nowrap;padding-top:0.2rem;min-width:90px;">Observational</div>
+          <p style="font-size:0.82rem;line-height:1.6;color:#6a6050;">The camera watches without interfering. No narration, no leading questions — just life as it happens. Some of the most powerful films ever made never say a word.</p>
+        </div>
+
+        <div class="style-row" style="padding:1.1rem 0;border-bottom:1px solid rgba(26,26,24,0.08);display:flex;gap:1.25rem;align-items:flex-start;">
+          <div class="style-label" style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);text-transform:uppercase;white-space:nowrap;padding-top:0.2rem;min-width:90px;">Participatory</div>
+          <p style="font-size:0.82rem;line-height:1.6;color:#6a6050;">The filmmaker steps in — asking, provoking, becoming part of the story. The process of finding the truth becomes the film itself.</p>
+        </div>
+
+        <div class="style-row" style="padding:1.1rem 0;border-bottom:1px solid rgba(26,26,24,0.08);display:flex;gap:1.25rem;align-items:flex-start;">
+          <div class="style-label" style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);text-transform:uppercase;white-space:nowrap;padding-top:0.2rem;min-width:90px;">Poetic</div>
+          <p style="font-size:0.82rem;line-height:1.6;color:#6a6050;">Mood, rhythm, and image over argument. Not every documentary needs to convince — some just need to make you feel something you can't quite name.</p>
+        </div>
+
+        <div class="style-row" style="padding:1.1rem 0;border-bottom:1px solid rgba(26,26,24,0.08);display:flex;gap:1.25rem;align-items:flex-start;">
+          <div class="style-label" style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);text-transform:uppercase;white-space:nowrap;padding-top:0.2rem;min-width:90px;">Investigative</div>
+          <p style="font-size:0.82rem;line-height:1.6;color:#6a6050;">A puzzle to be solved. Research, patience, and the willingness to follow a thread wherever it leads — even somewhere uncomfortable.</p>
+        </div>
+
+        <div class="style-row" style="padding:1.1rem 0;border-bottom:1px solid rgba(26,26,24,0.08);display:flex;gap:1.25rem;align-items:flex-start;">
+          <div class="style-label" style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);text-transform:uppercase;white-space:nowrap;padding-top:0.2rem;min-width:90px;">Performative</div>
+          <p style="font-size:0.82rem;line-height:1.6;color:#6a6050;">Deeply personal and unapologetically subjective. The filmmaker's own experience becomes the lens through which a bigger story is told.</p>
+        </div>
+
+        <div class="style-row" style="padding:1.1rem 0;display:flex;gap:1.25rem;align-items:flex-start;">
+          <div class="style-label" style="font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.1em;color:var(--amber);text-transform:uppercase;white-space:nowrap;padding-top:0.2rem;min-width:90px;">Expository</div>
+          <p style="font-size:0.82rem;line-height:1.6;color:#6a6050;">A clear argument, a strong point of view, evidence marshalled to persuade. Classic, direct, and still one of the most powerful forms of documentary filmmaking.</p>
+        </div>
+
+      </div>
+
+      <p style="margin-top:1.75rem;font-family:'Playfair Display',serif;font-style:italic;font-size:0.95rem;line-height:1.7;color:var(--charcoal);border-left:2px solid var(--amber);padding-left:1rem;">At Little Lens, we don't tell kids which style to use. We show them all of them — and let them find the one that feels like theirs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<!-- TO CLOSE WAITLIST: change WAITLIST_OPEN from true to false -->
+<script>var WAITLIST_OPEN = true;</script>
+<section class="waitlist-section" id="waitlist">
+  <div class="section-label" style="color:var(--amber);display:flex;align-items:center;gap:.75rem;justify-content:center;"><span style="display:block;width:1.5rem;height:1px;background:var(--amber)"></span>Be the first to know</div>
+
+  <!-- OPEN STATE -->
+  <div id="waitlist-open">
+    <h2 class="section-title">Join the waitlist.</h2>
+    <p>Dates haven't been announced yet. Join the waitlist and you'll be first to know — and first to register.</p>
+    <div style="width:100%;max-width:480px;margin:0 auto;position:relative;z-index:2;" class="fade-up">
+      <iframe data-tally-src="https://tally.so/embed/dWPEzo?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="400" frameborder="0" marginheight="0" marginwidth="0" title="Join the Little Lens Waitlist" style="background:transparent;"></iframe>
+      <script async src="https://tally.so/widgets/embed.js"></script>
+    </div>
+  </div>
+
+  <!-- CLOSED STATE -->
+  <div id="waitlist-closed" style="display:none;">
+    <h2 class="section-title">The waitlist is now full.</h2>
+    <p>We've reached capacity for our first cohort. Leave your email and we'll let you know when the next waitlist opens.</p>
+    <div style="width:100%;max-width:480px;margin:2rem auto 0;position:relative;z-index:2;">
+      <div style="border:1px solid rgba(212,130,10,0.4);padding:2.5rem;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:1rem;">🎬</div>
+        <p style="font-family:'Playfair Display',serif;font-size:1.2rem;font-style:italic;color:var(--cream);margin-bottom:0.75rem;">You just missed this round.</p>
+        <p style="font-size:0.85rem;color:rgba(245,240,232,0.6);margin-bottom:1.5rem;line-height:1.7;">But the next cohort is coming. Drop us an email and we'll add you to the next list.</p>
+        <a href="/cdn-cgi/l/email-protection#5b33327537322f2f373e373e35281b3c363a323775383436" style="display:inline-block;background:var(--amber);color:var(--charcoal);font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:0.9rem 2rem;text-decoration:none;">Email Us</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  if (typeof WAITLIST_OPEN !== 'undefined' && !WAITLIST_OPEN) {
+    document.getElementById('waitlist-open').style.display = 'none';
+    document.getElementById('waitlist-closed').style.display = 'block';
+  }
+</script>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Little<span>Lens</span></div>
+  <p>A documentary filmmaking workshop for kids in Singapore.</p>
+  <p><a href="/cdn-cgi/l/email-protection#7810115614110c0c141d141d160b381f15191114561b1715" style="color:var(--amber);text-decoration:none;"><span class="__cf_email__" data-cfemail="1a72733476736e6e767f767f74695a7d777b737634797577">[email&#160;protected]</span></a></p>
+  <p style="font-size:0.7rem;">© 2026 Little Lens. All rights reserved.</p>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Staggered delay for session cards
+  document.querySelectorAll('.session-card.fade-up').forEach((el, i) => {
+    el.style.transitionDelay = (i * 0.08) + 's';
+  });
+
+  function scrollToWaitlist() {
+   
